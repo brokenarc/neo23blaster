@@ -1,12 +1,15 @@
+import time
 import digitalio
 import board
 import neopixel
 
 # Configuration
 PROPMAKER_PWR = board.D10
+PROPMAKER_SWITCH = board.D9
 LED_PIN = board.D5
 NUM_LEDS = 15
 MAX_BRIGHTNESS = 1 / 3
+LOOP_SLEEP = 0.1
 
 # Setup colors
 IDLE_FULL = (0, 68, 255, 0)
@@ -69,6 +72,10 @@ enable = digitalio.DigitalInOut(PROPMAKER_PWR)
 enable.direction = digitalio.Direction.OUTPUT
 enable.value = True
 
+# Set up the switch
+switch = digitalio.DigitalInOut(PROPMAKER_SWITCH)
+switch.switch_to_input(pull=digitalio.Pull.UP)
+
 # Initialize the LED strips
 leds = neopixel.NeoPixel(
     LED_PIN, NUM_LEDS, brightness=MAX_BRIGHTNESS, pixel_order=neopixel.GRBW)
@@ -80,4 +87,6 @@ leds.fill(IDLE_FADE)
 
 # Loop blast forever (TODO: finish all the things)
 while True:
-    draw_blast(leds, BLAST_SPRITE)
+    if not switch.value:
+        draw_blast(leds, BLAST_SPRITE)
+    time.sleep(LOOP_SLEEP)
