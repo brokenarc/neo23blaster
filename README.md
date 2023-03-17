@@ -12,4 +12,12 @@ These components were used for the project:
 
 ## Installation
 
-Drag the `code.py` file to the `CIRCUITPY` drive that mounts when the Feather board is connected via USB.
+You must install the following dependencies from the [Adafruit CircuitPython library bundle](https://circuitpython.org/libraries) that matches the version of CircuitPython on your M4. Copy these files to the `lib` directory on the `CIRCUITPY` drive.
+
+* `adafruit_logging.mpy`
+* `neopixel.mpy`
+* `neopixel_spi.mpy`
+
+Finally, copy the `code.py` file to the `CIRCUITPY` drive that mounts when the Feather board is connected via USB.
+
+If you wish to adjust the logging level for debugging, create a setting named `LOG_LEVEL` in your `settings.toml` file with the desired [numeric level](https://learn.adafruit.com/a-logger-for-circuitpython/using-a-logger).
