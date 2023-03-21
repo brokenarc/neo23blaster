@@ -1,1 +1,3 @@
+# Default to DEBUG logging level.
+# See https://learn.adafruit.com/a-logger-for-circuitpython/using-a-logger
 LOG_LEVEL=10
