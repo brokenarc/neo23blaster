@@ -18,6 +18,10 @@ LOOP_SLEEP = 0.1
 # state. If it is held less time than this, it will enter the TRIGGER state.
 CHARGE_THRESHOLD = 0.5
 
+# The maximum brightness to allow for the NeoPixel strip as a percentage of the
+# strip's full brightness.
+MAX_BRIGHTNESS = 0.5
+
 # -----------------------------------------------------------------------------
 # Color scheme
 # -----------------------------------------------------------------------------

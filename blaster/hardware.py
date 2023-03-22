@@ -5,19 +5,29 @@ import digitalio
 import board
 import neopixel
 
-from . import LOGGER
+from . import LOGGER, MAX_BRIGHTNESS
 
 PROPMAKER_PWR = board.D10
 PROPMAKER_SWITCH = board.D9
 LED_PIN = board.D5
 NUM_LEDS = 15
-MAX_BRIGHTNESS = 1 / 3
 PIXEL_ORDER = neopixel.GRBW
 
 
 class BlasterProp:
     """Contains the settings and program logic specific to the hardware
     components.
+
+    Attributes
+    ----------
+    propmaker_power : object
+        Reference to the Feather M4 GPIO pin that turns on the Prop-Maker.
+    switch : object
+        Reference to the Feather M4 GPIO pin that connects to the switch
+        connection on the Prop-Maker.
+    leds : array_like(tuple)
+        Each element represents a single NeoPixel on the strip allowing its
+        color to be set with a tuple of (R, G, B, W) values.
     """
 
     def __init__(self):
