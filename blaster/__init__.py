@@ -14,6 +14,10 @@ LOGGER.setLevel(LOG_LEVEL)
 # How long to sleep between update checks in the event loop
 LOOP_SLEEP = 0.1
 
+# How long the trigger should be held down (in seconds) to enter the CHARGING
+# state. If it is held less time than this, it will enter the TRIGGER state.
+CHARGE_THRESHOLD = 0.5
+
 # -----------------------------------------------------------------------------
 # Color scheme
 # -----------------------------------------------------------------------------

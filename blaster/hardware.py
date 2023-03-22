@@ -37,6 +37,12 @@ class BlasterProp:
                                       pixel_order=PIXEL_ORDER)
         LOGGER.info('Hardware initialization complete')
 
+    @property
+    def trigger(self) -> bool:
+        """The trigger press state: `True` if the trigger is pressed, `False`
+        if it is not."""
+        return not self.switch.value
+
     def draw_sprite(self, sprite, offset):
         """Draws a sprite onto the LED strip
 

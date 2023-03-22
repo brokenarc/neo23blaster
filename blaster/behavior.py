@@ -4,17 +4,31 @@ from one state to another.
 
 Note that states' `update` methods do not have logging since they are called
 many times per second.
+
+The behavior of the prop is defined as:
+
+1. Starts up in the IDLE state
+2. Pressing the trigger causes a transition to the TRIGGER state
+3. If the trigger is quickly released:
+    a. Transition to FIRING state
+    b. Return to IDLE state and wait for a trigger press
+4. Else if the trigger stays down, transition to the CHARGING state
+5. Once charged, transition to the CHARGED state
+6. When the trigger is released, transition to FIRING state
+7. Return to IDLE state and wait for a trigger press
 """
 
-from . import LOGGER, IDLE_FULL, IDLE_FADE, CHARGE_FADE, BLAST_FADE, BLAST_FULL
+import time
+from . import LOGGER, CHARGE_THRESHOLD, IDLE_FULL, IDLE_FADE, CHARGE_FADE, BLAST_FADE, BLAST_FULL
 from .hardware import BlasterProp
 
 # -----------------------------------------------------------------------------
 # The names of the prop states.
-STATE_IDLE = 'IDLE'
 STATE_CHARGED = 'CHARGED'
 STATE_CHARGING = 'CHARGING'
 STATE_FIRING = 'FIRING'
+STATE_IDLE = 'IDLE'
+STATE_TRIGGER = 'TRIGGER'
 
 # -----------------------------------------------------------------------------
 # The sprites used by the various states.
@@ -141,6 +155,7 @@ class PropStateMachine:
 # The prop states.
 # -----------------------------------------------------------------------------
 
+
 class IdleState(PropState):
     """Models the idle state.
 
@@ -159,19 +174,54 @@ class IdleState(PropState):
         super().enter()
         self._prop.leds.fill(IDLE_FADE)
 
-    def exit(self):
-        super().exit()
-
     def update(self) -> str | None:
         """Check to see if the trigger switch has been pressed.
 
         Returns
         -------
         str or None
-            `STATE_CHARGING` if the switch has been pressed, otherwise `None`.
+            `STATE_TRIGGER` if the trigger has been pressed, otherwise `None`.
         """
-        switch = self._prop.switch.value
-        return STATE_CHARGING if not switch else None
+        return STATE_TRIGGER if self._prop.trigger else None
+
+
+class TriggerState(PropState):
+    """Models the trigger state behavior that measures how long the trigger is
+    held down to determine the next state.
+
+    Parameters
+    ----------
+    prop : BlasterProp
+        The prop this state instance is bound to.
+    """
+
+    def __init__(self, prop: BlasterProp):
+        super().__init__(STATE_TRIGGER, prop)
+        self.__time = 0
+
+    def enter(self):
+        """Start the trigger press timer.
+        """
+        super().enter()
+        self.__time = time.monotonic()
+
+    def update(self) -> str | None:
+        """Check to see if the trigger was released quickly enough for the
+        firing state or if it has been held down long enough to start charging.
+
+        Returns
+        -------
+        str or None
+            - `STATE_FIRING` if the trigger was released quickly
+            - `STATE_CHARGING` if the trigger was held down longer than the
+              charge threshold.
+            - `None` if neither condition is met
+        """
+        delta = abs(time.monotonic() - self.__time)
+        if self._prop.trigger:
+            return STATE_CHARGING if delta > CHARGE_THRESHOLD else None
+        else:
+            return STATE_FIRING
 
 
 class ChargedState(PropState):
@@ -185,14 +235,6 @@ class ChargedState(PropState):
 
     def __init__(self, prop: BlasterProp):
         super().__init__(STATE_CHARGED, prop)
-
-    def enter(self):
-        """Fill the NeoPixel strip with the idle color.
-        """
-        super().enter()
-
-    def exit(self):
-        super().exit()
 
     def update(self) -> str | None:
         """Check to see if the trigger switch has been released.
@@ -224,9 +266,6 @@ class ChargingState(PropState):
         super().enter()
         self._prop.animate_sprite(CHARGE_SPRITE)
 
-    def exit(self):
-        super().exit()
-
     def update(self) -> str | None:
         """Transition to the charged state.
 
@@ -256,9 +295,6 @@ class FiringState(PropState):
         super().enter()
         self._prop.animate_sprite(BLAST_SPRITE)
 
-    def exit(self):
-        super().exit()
-
     def update(self) -> str | None:
         """Transition to the idle state.
 
@@ -268,4 +304,3 @@ class FiringState(PropState):
             Always returns `STATE_IDLE`.
         """
         return STATE_IDLE
-

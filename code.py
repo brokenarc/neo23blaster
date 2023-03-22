@@ -3,7 +3,7 @@ import time
 from blaster import LOOP_SLEEP, LOGGER
 from blaster.hardware import BlasterProp
 from blaster.behavior import PropStateMachine, STATE_IDLE, IdleState, \
-    ChargingState, ChargedState, FiringState
+    ChargingState, ChargedState, FiringState, TriggerState
 
 # -----------------------------------------------------------------------------
 # Initialize the prop and state machine
@@ -12,6 +12,7 @@ prop = BlasterProp()
 state_machine = PropStateMachine(
     states=[
         IdleState(prop),
+        TriggerState(prop),
         ChargingState(prop),
         ChargedState(prop),
         FiringState(prop)
