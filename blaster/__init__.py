@@ -62,17 +62,19 @@ def apply_brightness(brightness, *pixels):
 
 
 def grbw(*pixels):
-    """Converts a single RGBW pixel to GRBW.
+    """Converts one or more RGBW pixels to GRBW.
 
     Parameters
     ----------
     pixel : array_like(int)
-        A sequence containing separate red, green, blue, and white values.
+        A sequence of pixels.
 
     Returns
     -------
-    tuple
-        The converted pixel as a tuple.
+    array_like(int) | array_like(array_like(int))
+        If only a single pixel was provided, a single converted pixel is
+        returned. If multiple pixels were given, a sequence of converted pixels
+        is returned.
     """
     result = [(pixel[1], pixel[0], pixel[2], pixel[3]) for pixel in pixels]
 
