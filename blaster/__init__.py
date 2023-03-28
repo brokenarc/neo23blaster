@@ -1,5 +1,5 @@
 import os
-import adafruit_logging as logging 
+import adafruit_logging as logging
 
 
 # -----------------------------------------------------------------------------
@@ -13,6 +13,9 @@ LOGGER.setLevel(LOG_LEVEL)
 
 # How long to sleep between update checks in the event loop
 LOOP_SLEEP = 0.1
+
+# How long to sleep between steps of the LED animations
+ANIMATION_SLEEP = 0.005
 
 # How long the trigger should be held down (in seconds) to enter the CHARGING
 # state. If it is held less time than this, it will enter the TRIGGER state.
@@ -30,3 +33,63 @@ IDLE_FADE = (0, 11, 42, 0)  # Dark blue
 CHARGE_FADE = (0, 22, 64, 0)  # Medium blue
 BLAST_FULL = (255, 0, 0, 0)  # Bright red
 BLAST_FADE = (25, 0, 0, 0)  # Dark red
+
+
+def apply_brightness(brightness, *pixels):
+    """Adjust one or more pixels to a given brightness.
+
+    Parameters
+    ----------
+    brightness : float
+        A value between 0.0 and 1.0, inclusive.
+    *pixels : array_like(int)
+        One or more pixels.
+
+    Returns
+    -------
+    array_like(int) | array_like(array_like(int))
+        If only a single pixel was provided, a single pixel adjusted to the
+        given brightness is returned. If multiple pixels were given, a sequence
+        of pixels adjusted to the given brightness is returned.
+    """
+    brightness = min(max(brightness, 0.0), 1.0)
+    result = [
+        tuple([int(color * brightness) for color in pixel])
+        for pixel in pixels
+    ]
+
+    return result[0] if len(result) == 1 else tuple(result)
+
+
+def grbw(*pixels):
+    """Converts a single RGBW pixel to GRBW.
+
+    Parameters
+    ----------
+    pixel : array_like(int)
+        A sequence containing separate red, green, blue, and white values.
+
+    Returns
+    -------
+    tuple
+        The converted pixel as a tuple.
+    """
+    result = [(pixel[1], pixel[0], pixel[2], pixel[3]) for pixel in pixels]
+
+    return result[0] if len(result) == 1 else tuple(result)
+
+
+def pixels_to_bytes(pixels):
+    """Converts a sequence of pixels into a byte array.
+
+    Parameters
+    ----------
+    pixels : array_like(array_like(int))
+        A sequence of pixels.
+
+    Returns
+    array_like(byte)
+        A one-dimensional byte array containing the color components of each
+        pixel.
+    """
+    return bytearray([channel for pixel in pixels for channel in pixel])

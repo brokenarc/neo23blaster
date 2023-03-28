@@ -19,7 +19,7 @@ The behavior of the prop is defined as:
 """
 
 import time
-from . import LOGGER, CHARGE_THRESHOLD, IDLE_FULL, IDLE_FADE, CHARGE_FADE, BLAST_FADE, BLAST_FULL
+from . import LOGGER, CHARGE_THRESHOLD
 from .hardware import BlasterProp
 
 # -----------------------------------------------------------------------------
@@ -29,11 +29,6 @@ STATE_CHARGING = 'CHARGING'
 STATE_FIRING = 'FIRING'
 STATE_IDLE = 'IDLE'
 STATE_TRIGGER = 'TRIGGER'
-
-# -----------------------------------------------------------------------------
-# The sprites used by the various states.
-CHARGE_SPRITE = (CHARGE_FADE, IDLE_FULL, IDLE_FULL, CHARGE_FADE)
-BLAST_SPRITE = (IDLE_FADE, BLAST_FADE, BLAST_FULL, BLAST_FADE, IDLE_FADE)
 
 
 class PropState:
@@ -151,6 +146,7 @@ class PropStateMachine:
             if next_state:
                 self.state = next_state
 
+
 # -----------------------------------------------------------------------------
 # The prop states.
 # -----------------------------------------------------------------------------
@@ -172,7 +168,7 @@ class IdleState(PropState):
         """Fill the NeoPixel strip with the idle color.
         """
         super().enter()
-        self._prop.leds.fill(IDLE_FADE)
+        self._prop.play_idle_effect()
 
     def update(self) -> str | None:
         """Check to see if the trigger switch has been pressed.
@@ -264,7 +260,7 @@ class ChargingState(PropState):
         """Animate the charging effect on the prop's NeoPixel strip.
         """
         super().enter()
-        self._prop.animate_sprite(CHARGE_SPRITE)
+        self._prop.play_charging_effect()
 
     def update(self) -> str | None:
         """Transition to the charged state.
@@ -293,7 +289,7 @@ class FiringState(PropState):
         """Animate the firing effect on the prop's NeoPixel strip.
         """
         super().enter()
-        self._prop.animate_sprite(BLAST_SPRITE)
+        self._prop.play_firing_effect()
 
     def update(self) -> str | None:
         """Transition to the idle state.

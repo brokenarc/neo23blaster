@@ -12,11 +12,9 @@ These components were used for the project:
 
 ## Installation
 
-You must install the following dependencies from the [Adafruit CircuitPython library bundle](https://circuitpython.org/libraries) that matches the version of CircuitPython on your M4. Copy these files to the `lib` directory on the `CIRCUITPY` drive.
+You must install the following dependencies from the [Adafruit CircuitPython library bundle](https://circuitpython.org/libraries) that matches the version of CircuitPython on your M4. Copy this file to the `lib` directory on the `CIRCUITPY` drive.
 
 * `adafruit_logging.mpy`
-* `neopixel.mpy`
-* `neopixel_spi.mpy`
 
 Finally, copy the `code.py` file, `settings.toml` file, and the `blaster` directory to the `CIRCUITPY` drive that mounts when the Feather board is connected via USB.
 

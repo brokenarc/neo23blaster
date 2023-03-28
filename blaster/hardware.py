@@ -1,17 +1,43 @@
 """The logic to handle the blaster hardware.
 """
 
+import time
 import digitalio
 import board
-import neopixel
+from neopixel_write import neopixel_write
 
-from . import LOGGER, MAX_BRIGHTNESS
+from . import LOGGER, ANIMATION_SLEEP, MAX_BRIGHTNESS, IDLE_FULL, IDLE_FADE, \
+    CHARGE_FADE, BLAST_FULL, BLAST_FADE, apply_brightness, grbw, \
+    pixels_to_bytes
 
 PROPMAKER_PWR = board.D10
 PROPMAKER_SWITCH = board.D9
 LED_PIN = board.D5
 NUM_LEDS = 15
-PIXEL_ORDER = neopixel.GRBW
+BPP = 4  # bytes per pixel
+
+# -----------------------------------------------------------------------------
+# The sprites used by the various states.
+#
+# The strip used in this build has GRBW byte ordering. For RGBW strips, remove
+# the call to grbw
+CHARGE_SPRITE = pixels_to_bytes(
+    apply_brightness(
+        MAX_BRIGHTNESS,
+        *grbw(CHARGE_FADE, IDLE_FULL, IDLE_FULL, CHARGE_FADE)
+    )
+)
+
+BLAST_SPRITE = pixels_to_bytes(
+    apply_brightness(
+        MAX_BRIGHTNESS,
+        *grbw(IDLE_FADE, BLAST_FADE, BLAST_FULL, BLAST_FADE, IDLE_FADE)
+    )
+)
+
+IDLE_IMAGE = pixels_to_bytes(
+    [grbw(apply_brightness(MAX_BRIGHTNESS, IDLE_FADE))] * NUM_LEDS
+)
 
 
 class BlasterProp:
@@ -25,9 +51,11 @@ class BlasterProp:
     switch : object
         Reference to the Feather M4 GPIO pin that connects to the switch
         connection on the Prop-Maker.
-    leds : array_like(tuple)
-        Each element represents a single NeoPixel on the strip allowing its
-        color to be set with a tuple of (R, G, B, W) values.
+    led_pin : object
+        Reference to the Feather M4 GPIO pin that connects to the NeoPixels
+        connector.
+    led_strip : bytearray
+        The raw bytes that represent the NeoPixel colors.
     """
 
     def __init__(self):
@@ -41,10 +69,10 @@ class BlasterProp:
         self.switch = digitalio.DigitalInOut(PROPMAKER_SWITCH)
         self.switch.switch_to_input(pull=digitalio.Pull.UP)
 
-        # Initialize the LED strips
-        self.leds = neopixel.NeoPixel(LED_PIN, NUM_LEDS,
-                                      brightness=MAX_BRIGHTNESS,
-                                      pixel_order=PIXEL_ORDER)
+        # Initialize the LED strip
+        self.led_pin = digitalio.DigitalInOut(LED_PIN)
+        self.led_pin.direction = digitalio.Direction.OUTPUT
+        self.led_strip = bytearray(NUM_LEDS * BPP)
         LOGGER.info('Hardware initialization complete')
 
     @property
@@ -70,13 +98,13 @@ class BlasterProp:
         offset : int
             Where along the strip to place the sprite.
         """
-        target_bounds = range(len(self.leds))
+        target_bounds = range(len(self.led_strip))
         target_start = offset - len(sprite)
 
         for i in range(len(sprite)):
             target_index = target_start + i
             if target_index in target_bounds:
-                self.leds[target_index] = sprite[i]
+                self.led_strip[target_index] = sprite[i]
 
     def animate_sprite(self, sprite):
         """Animates a sprite along the LED strip.
@@ -89,6 +117,22 @@ class BlasterProp:
         sprite : array-like(tuple(int))
             Sequence of LED colors that represent the "sprite."
         """
-        for i in range(len(self.leds) + len(sprite)):
+        for i in range(0, len(self.led_strip) + len(sprite), BPP):
             self.draw_sprite(sprite, i)
-            self.leds.show()
+            neopixel_write(self.led_pin, self.led_strip)
+            time.sleep(ANIMATION_SLEEP)
+
+    def play_idle_effect(self):
+        """Displays the idle effect.
+        """
+        neopixel_write(self.led_pin, IDLE_IMAGE)
+
+    def play_charging_effect(self):
+        """Plays the charging effect.
+        """
+        self.animate_sprite(CHARGE_SPRITE)
+
+    def play_firing_effect(self):
+        """Plays the firing effect.
+        """
+        self.animate_sprite(BLAST_SPRITE)
