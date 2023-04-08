@@ -10,9 +10,9 @@ import audioio
 import audiocore
 from neopixel_write import neopixel_write
 
-from . import LOGGER, ANIMATION_SLEEP, MAX_BRIGHTNESS, IDLE_FULL, IDLE_FADE, \
-    CHARGE_FADE, BLAST_FULL, BLAST_FADE, BLAST_SOUND, apply_brightness, grbw, \
-    pixels_to_bytes
+from . import ANIMATION_SLEEP, BATTERY_GOOD, BATTERY_WARN, BLAST_FADE, \
+    BLAST_FULL, CHARGE_FADE, IDLE_FADE, IDLE_FULL, LOGGER, MAX_BRIGHTNESS, \
+    SOUND_DIR, apply_brightness, grbw, pixels_to_bytes
 
 PROPMAKER_PWR = board.D10
 PROPMAKER_SWITCH = board.D9
@@ -43,6 +43,10 @@ BLAST_SPRITE = pixels_to_bytes(
 IDLE_IMAGE = pixels_to_bytes(
     [grbw(apply_brightness(MAX_BRIGHTNESS, IDLE_FADE))] * NUM_LEDS
 )
+
+# -----------------------------------------------------------------------------
+# The sounds used by the blaster
+BLAST_SOUND = f'{SOUND_DIR}/laserShoot.wav'
 
 
 def play_wav(filename):
@@ -144,6 +148,20 @@ class BlasterProp:
             self.draw_sprite(sprite, i)
             neopixel_write(self.led_pin, self.led_strip)
             time.sleep(ANIMATION_SLEEP)
+
+    def update_battery(self):
+        """Check the current battery voltage level and update the battery
+        status LED.
+        """
+        LOGGER.debug('Checking battery level.')
+        voltage = 3.7 # replace with the logic to get the voltage level
+
+        if voltage >= BATTERY_GOOD:
+            pass # replace with logic to change battery LED to good
+        elif voltage >= BATTERY_WARN:
+            pass # replace with logic to change battery LED to warning
+        else:
+            pass # replace with logic to change battery LED to danger
 
     def play_idle_effect(self):
         """Displays the idle effect.

@@ -21,7 +21,7 @@ The behavior of the prop is defined as:
 """
 
 import time
-from . import LOGGER, CHARGE_THRESHOLD
+from . import CHARGE_THRESHOLD, LOGGER
 from .hardware import BlasterProp
 
 # -----------------------------------------------------------------------------

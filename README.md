@@ -16,6 +16,6 @@ You must install the following dependencies from the [Adafruit CircuitPython lib
 
 * `adafruit_logging.mpy`
 
-Finally, copy the `code.py` file, `settings.toml` file, and the `blaster` directory to the `CIRCUITPY` drive that mounts when the Feather board is connected via USB.
+Finally, copy the `code.py` file, `settings.toml` file, the `sounds` directory, and the `blaster` directory to the `CIRCUITPY` drive that mounts when the Feather board is connected via USB.
 
 If you wish to adjust the logging level for debugging, edit the setting named `LOG_LEVEL` in your `settings.toml` file with the desired [numeric level](https://learn.adafruit.com/a-logger-for-circuitpython/using-a-logger).

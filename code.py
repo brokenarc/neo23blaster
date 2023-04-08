@@ -2,10 +2,10 @@
 
 import time
 
-from blaster import LOOP_SLEEP, LOGGER
+from blaster import BATTERY_TIME, BEHAVIOR_TIME, LOGGER
 from blaster.hardware import BlasterProp
-from blaster.behavior import PropStateMachine, STATE_IDLE, IdleState, \
-    ChargingState, ChargedState, FiringState, TriggerState
+from blaster.behavior import STATE_IDLE, ChargingState, ChargedState, \
+    FiringState, IdleState, PropStateMachine, TriggerState
 
 # -----------------------------------------------------------------------------
 # Initialize the prop and state machine
@@ -25,6 +25,16 @@ state_machine = PropStateMachine(
 # Event loop
 # -----------------------------------------------------------------------------
 LOGGER.info('Starting event loop')
+behavior_time = 0
+battery_time = 0
+
 while True:
-    state_machine.update()
-    time.sleep(LOOP_SLEEP)
+    now = time.monotonic()
+
+    if (now - behavior_time) >= BEHAVIOR_TIME:
+        state_machine.update()
+        behavior_time = now
+
+    if (now - battery_time) >= BATTERY_TIME:
+        prop.update_battery()
+        battery_time = now

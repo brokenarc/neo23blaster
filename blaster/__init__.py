@@ -13,9 +13,6 @@ LOG_LEVEL = os.getenv('LOG_LEVEL', logging.WARNING)
 LOGGER = logging.getLogger('prop')
 LOGGER.setLevel(LOG_LEVEL)
 
-# How long to sleep between update checks in the event loop
-LOOP_SLEEP = 0.1
-
 # How long to sleep between steps of the LED animations
 ANIMATION_SLEEP = 0.005
 
@@ -26,6 +23,18 @@ CHARGE_THRESHOLD = 0.5
 # The maximum brightness to allow for the NeoPixel strip as a percentage of the
 # strip's full brightness.
 MAX_BRIGHTNESS = 0.5
+
+# -----------------------------------------------------------------------------
+# Event loop intervals (in seconds)
+# -----------------------------------------------------------------------------
+BEHAVIOR_TIME = 0.01 # How often to wait between state machine updates
+BATTERY_TIME = 60 # How often to wait between battery level checks
+
+# -----------------------------------------------------------------------------
+# Battery voltage levels
+# -----------------------------------------------------------------------------
+BATTERY_GOOD = 3.6 # This value or greater is "good"
+BATTERY_WARN = 3.1 # This value or greater is "warn", anything below is "bad"
 
 # -----------------------------------------------------------------------------
 # Color scheme
