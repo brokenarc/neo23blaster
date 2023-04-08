@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 import os
 import adafruit_logging as logging
 
@@ -33,6 +35,12 @@ IDLE_FADE = (0, 11, 42, 0)  # Dark blue
 CHARGE_FADE = (0, 22, 64, 0)  # Medium blue
 BLAST_FULL = (255, 0, 0, 0)  # Bright red
 BLAST_FADE = (25, 0, 0, 0)  # Dark red
+
+# -----------------------------------------------------------------------------
+# Sound scheme
+# -----------------------------------------------------------------------------
+SOUND_DIR = 'sounds'
+BLAST_SOUND = f'{SOUND_DIR}/laserShoot.wav'
 
 
 def apply_brightness(brightness, *pixels):

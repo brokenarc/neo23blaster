@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 import time
 
 from blaster import LOOP_SLEEP, LOGGER

@@ -1,17 +1,22 @@
+# SPDX-License-Identifier: MIT
+
 """The logic to handle the blaster hardware.
 """
 
 import time
 import digitalio
 import board
+import audioio
+import audiocore
 from neopixel_write import neopixel_write
 
 from . import LOGGER, ANIMATION_SLEEP, MAX_BRIGHTNESS, IDLE_FULL, IDLE_FADE, \
-    CHARGE_FADE, BLAST_FULL, BLAST_FADE, apply_brightness, grbw, \
+    CHARGE_FADE, BLAST_FULL, BLAST_FADE, BLAST_SOUND, apply_brightness, grbw, \
     pixels_to_bytes
 
 PROPMAKER_PWR = board.D10
 PROPMAKER_SWITCH = board.D9
+AUDIO_PIN = board.A0
 LED_PIN = board.D5
 NUM_LEDS = 15
 BPP = 4  # bytes per pixel
@@ -38,6 +43,23 @@ BLAST_SPRITE = pixels_to_bytes(
 IDLE_IMAGE = pixels_to_bytes(
     [grbw(apply_brightness(MAX_BRIGHTNESS, IDLE_FADE))] * NUM_LEDS
 )
+
+
+def play_wav(filename):
+    """Plays the given WAV file and returns when it has finished playing.
+
+    Parameters
+    ----------
+    filename : str
+        The full filename of the WAV file to play.
+    """
+    with audioio.AudioOut(AUDIO_PIN) as audio:  # Speaker connector
+        wave_file = open(filename, "rb")
+        wave = audiocore.WaveFile(wave_file)
+
+        audio.play(wave)
+        while audio.playing:
+            pass
 
 
 class BlasterProp:
@@ -73,6 +95,7 @@ class BlasterProp:
         self.led_pin = digitalio.DigitalInOut(LED_PIN)
         self.led_pin.direction = digitalio.Direction.OUTPUT
         self.led_strip = bytearray(NUM_LEDS * BPP)
+
         LOGGER.info('Hardware initialization complete')
 
     @property
@@ -135,4 +158,5 @@ class BlasterProp:
     def play_firing_effect(self):
         """Plays the firing effect.
         """
+        play_wav(BLAST_SOUND)
         self.animate_sprite(BLAST_SPRITE)

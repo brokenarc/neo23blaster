@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 """Contains the program code for handling the blaster's behavior. This
 includes the various prop states as well as the state machine to handle going
 from one state to another.
