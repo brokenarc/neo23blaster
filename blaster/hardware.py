@@ -176,5 +176,5 @@ class BlasterProp:
     def play_firing_effect(self):
         """Plays the firing effect.
         """
-        play_wav(BLAST_SOUND)
         self.animate_sprite(BLAST_SPRITE)
+        play_wav(BLAST_SOUND)
