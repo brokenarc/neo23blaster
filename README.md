@@ -9,6 +9,10 @@ These components were used for the project:
 * [Adafruit Feather M4 CAN Express](https://www.adafruit.com/product/4759) - A standard [Feather M4 Express](https://www.adafruit.com/product/3857) can also be used. This model was used because it was available when the project was being built.
 * [Adafruit Prop-Maker FeatherWing](https://www.adafruit.com/product/3988)
 * [Adafruit Mini Skinny NeoPixel RGBW LED Strip](https://www.adafruit.com/product/4914)
+* [Mini Oval Speaker - 8 Ohm 1 Watt](https://www.adafruit.com/product/3923)
+* [Micro Switch w/Lever - 2 Terminal](https://www.adafruit.com/product/818)
+* [Lithium Ion Battery Pack - 3.7V 6600mAh](https://www.adafruit.com/product/353)
+* Assorted wire, Dupont connectors, and JST-PH connectors
 
 ## Installation
 
